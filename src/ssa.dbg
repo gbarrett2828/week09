@@ -1,0 +1,284 @@
+mc: 9:31 3.18.2019. Compiling ssa.c in debug mode.
+
+The input program is:
+
+int f(int i)
+{
+  int j;
+  int k;
+  j = 1;
+  k = 0;
+  while (<(k, 100))
+    {
+      if (<(j, 20)) then
+        {
+          j = i;
+          k = +(k, 1);
+        }
+      else
+        {
+          j = k;
+          k = +(k, 2);
+        }
+    }
+  return
+    j
+}
+int main()
+{
+  int n;
+  n = f(1);
+  print n;
+  return
+    0
+}
+
+Type environment is:
+% : int * int -> int
+* : int * int -> int
+** : int * int -> int
++ : int * int -> int
+- : int * int -> int
+/ : int * int -> int
+< : int * int -> bool
+<= : int * int -> bool
+<> : int * int -> bool
+== : int * int -> bool
+> : int * int -> bool
+>= : int * int -> bool
+f : int -> int
+main :  -> int
+not : bool -> bool
+
+The program is well-typed.
+
+
+After the naming phase:
+
+int f(int i)
+{
+  int j;
+  int k;
+  j = 1;
+  k = 0;
+  while (let x9 : int = k in let x10 : int = 100 in let x11 : int = <(x9, x10) in x11)
+    {
+      if (      let 
+          x6 : int = j
+          x7 : int = 20
+          x8 : int = <(x6, x7)
+      in
+        x8
+      ) then
+        {
+          j = i;
+          k =           let 
+              x3 : int = k
+              x4 : int = 1
+              x5 : int = +(x3, x4)
+          in
+            x5
+          ;
+        }
+      else
+        {
+          j = k;
+          k =           let 
+              x0 : int = k
+              x1 : int = 2
+              x2 : int = +(x0, x1)
+          in
+            x2
+          ;
+        }
+    }
+  return
+    j
+}
+int main()
+{
+  int n;
+  n =   let 
+      x12 : int = 1
+      x13 : int = f(x12)
+  in
+    x13
+  ;
+  print n;
+  return
+    0
+}
+
+After the lifting phase:
+
+int f(int i)
+{
+  int j;
+  int k;
+  j = 1;
+  k = 0;
+  while (let x9 : int = k in let x10 : int = 100 in let x11 : int = <(x9, x10) in x11)
+    {
+      if (      let 
+          x6 : int = j
+          x7 : int = 20
+          x8 : int = <(x6, x7)
+      in
+        x8
+      ) then
+        {
+          j = i;
+          k =           let 
+              x3 : int = k
+              x4 : int = 1
+              x5 : int = +(x3, x4)
+          in
+            x5
+          ;
+        }
+      else
+        {
+          j = k;
+          k =           let 
+              x0 : int = k
+              x1 : int = 2
+              x2 : int = +(x0, x1)
+          in
+            x2
+          ;
+        }
+    }
+  return
+    j
+}
+int main()
+{
+  int n;
+  n =   let 
+      x12 : int = 1
+      x13 : int = f(x12)
+  in
+    x13
+  ;
+  print n;
+  return
+    0
+}
+
+After the copyprop phase:
+
+int f(int i)
+{
+  int j;
+  int k;
+  j = 1;
+  k = 0;
+  while (let x10 : int = 100 in let x11 : int = <(k, x10) in x11)
+    {
+      if (      let 
+          x7 : int = 20
+          x8 : int = <(j, x7)
+      in
+        x8
+      ) then
+        {
+          j = i;
+          k =           let 
+              x4 : int = 1
+              x5 : int = +(k, x4)
+          in
+            x5
+          ;
+        }
+      else
+        {
+          j = k;
+          k =           let 
+              x1 : int = 2
+              x2 : int = +(k, x1)
+          in
+            x2
+          ;
+        }
+    }
+  return
+    j
+}
+int main()
+{
+  int n;
+  n =   let 
+      x12 : int = 1
+      x13 : int = f(x12)
+  in
+    x13
+  ;
+  print n;
+  return
+    0
+}
+
+After the control phase:
+
+f:	(i)
+	j = 0
+	k = 0
+	j = 1
+	k = 0
+l0:	nop
+	x10 = 100
+	x11 = k < x10
+	jmpzero x11, l1
+	x7 = 20
+	x8 = j < x7
+	jmpzero x8, l2
+	j = i
+	x4 = 1
+	x5 = k + x4
+	k = x5
+	jmp l3
+l2:	nop
+	j = k
+	x1 = 2
+	x2 = k + x1
+	k = x2
+l3:	nop
+	jmp l0
+l1:	nop
+	x14 = j
+	return x14
+
+main:	()
+	n = 0
+	x12 = 1
+	x13 = call f(x12)
+	n = x13
+	x15 = n
+	print x15
+	x16 = 0
+	return x16
+
+CG environment for f is:
+i : 2
+j : -13
+k : -16
+x1 : -14
+x10 : -5
+x11 : -6
+x14 : -17
+x2 : -15
+x4 : -10
+x5 : -11
+x7 : -7
+x8 : -8
+
+CG environment for main is:
+n : -4
+x12 : -2
+x13 : -3
+x15 : -5
+x16 : -6
+
+Emitting MIPS assembley code to ssa.asm
+
+
