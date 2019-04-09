@@ -111,9 +111,9 @@ The λ-terms are variables, functions (aka *abstractions*) and applications (cal
 
 It's convenient to use abbreviations for the notation above.
 
-1. Outer parenthesis will often be omitted. So ( λx.x) and (y z) might be written as λx.x and y z, resp. 
+1. Outer parentheses will often be omitted. So ( λx.x) and (y z) might be written as λx.x and y z, resp. 
 
-2. Application associates to the left, so
+2. Application will often be written without parentheses, i.e., with just juxtaposition, with the understanding that application associates to the left, so
 
    ``` 
    M N P is shorthand for ((M N) P)
@@ -137,7 +137,7 @@ Some combinators are especially well-known:
 + ω = λx.x x — the ω combinator has self-application
 + ω' = λx.f (x x)
 + Ω = ω ω
-+ Y = λf.ω' ω' — the paradoxical
++ Y = λf.ω' ω' — the paradoxical combinator.
 
 ##### Lambda Terms as Trees
 
@@ -220,14 +220,26 @@ Then consider Y F 3.
 Y F 3 = (Y F) 3
       = ((λf.(λx.f (x x)) (λx.f (x x))) F) 3
       =β (λx.F (x x)) (λx.F (x x)) 3
-      =β F (((λx.F (x x)) (λx.F (x x))) 3
-      = (λfact.λn.if n = 0 then 1 else n * fact(n - 1)) (((λx.F (x x)) (λx.F (x x))) 3
-      =β (λn.if n = 0 then 1 else n * (((λx.F (x x)) (λx.F (x x)))(n - 1)) 3
-      =β if 3 = 0 then 1 else 3 * (((λx.F (x x)) (λx.F (x x)))(3 - 1)
-      = if false then 1 else 3 * (((λx.F (x x)) (λx.F (x x)))(3 - 1)
-      = 3 * (((λx.F (x x)) (λx.F (x x)) 2)
+      =β F ((λx.F (x x)) (λx.F (x x))) 3
+      = (λfact.λn.if n = 0 then 1 else n * fact(n - 1)) ((λx.F (x x)) (λx.F (x x))) 3
+      =β (λn.if n = 0 then 1 else n * ((λx.F (x x)) (λx.F (x x)))(n - 1)) 3
+      =β if 3 = 0 then 1 else 3 * (((λx.F (x x)) (λx.F (x x)))(3 - 1))
+      = if  false then 1 else 3 * (((λx.F (x x)) (λx.F (x x)))(3 - 1))
+      = 3 * (((λx.F (x x)) (λx.F (x x))) 2)
       = ...
       = 3 * 2 * 1 * 1
       = 6
+```
+
+Y is just one fix point combinator, Alan Turing invented another:
+
+```
+Θ = (λx.λf.f (x x f)) (λx.λf.f (x x f))
+```
+
+There is also a call-by-value fixpoint combinator:
+
+```
+Z = λf.(λx.f (λv.x x v)) (λx.f (λv.x x v))
 ```
 
